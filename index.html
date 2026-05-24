@@ -26,6 +26,17 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:radial-gradie
 .particle{position:absolute;border-radius:50%;background:var(--cr);animation:pFly linear forwards;opacity:0}
 @keyframes pFly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0)}}
 
+/* 🌟 MOUSE TRAIL CANVAS SETUP */
+#trail-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 99;
+}
+
 header{position:relative;z-index:10;padding:1rem 1.5rem;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);background:rgba(17,17,17,.85);backdrop-filter:blur(12px)}
 .hlogo{display:flex;align-items:center;gap:10px;animation:fadeD .5s ease both}
 @keyframes fadeD{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
@@ -38,7 +49,7 @@ main{position:relative;z-index:5;min-height:calc(100vh - 65px);display:flex;alig
 .panel{width:100%;max-width:500px;animation:panelIn .6s cubic-bezier(.16,1,.3,1) both}
 @keyframes panelIn{from{opacity:0;transform:translateY(28px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 
-.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1rem;position:relative;z-index:10;}
 .clabel{font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--cr);margin-bottom:.9rem}
 
 /* Single Input Field Styling */
@@ -109,6 +120,8 @@ input[type="text"]::placeholder{color:var(--muted);font-weight:600; letter-spaci
 </head>
 <body>
 
+<canvas id="trail-canvas"></canvas>
+
 <div class="lines" id="lines"></div>
 <div class="particles" id="particles"></div>
 
@@ -168,28 +181,124 @@ input[type="text"]::placeholder{color:var(--muted);font-weight:600; letter-spaci
 <div class="toast" id="toast"></div>
 
 <script>
-// Speed lines animation
-(()=>{
-  const w=document.getElementById('lines');
-  for(let i=0;i<10;i++){
-    const l=document.createElement('div');l.className='line';
-    l.style.cssText=`top:${Math.random()*100}%;width:${80+Math.random()*180}px;animation-duration:${3+Math.random()*6}s;animation-delay:${-Math.random()*8}s`;
+// Speed lines background animation
+(() => {
+  const w = document.getElementById('lines');
+  for (let i = 0; i < 10; i++) {
+    const l = document.createElement('div'); l.className = 'line';
+    l.style.cssText = `top:${Math.random() * 100}%;width:${80 + Math.random() * 180}px;animation-duration:${3 + Math.random() * 6}s;animation-delay:${-Math.random() * 8}s`;
     w.appendChild(l);
   }
 })();
 
-// Auto-focus the input box when the page loads
+// ----------------------------------------------------
+// ✨ UPGRADED PHYSICS MOUSE TRAIL SYSTEM
+// ----------------------------------------------------
+(() => {
+  const canvas = document.getElementById('trail-canvas');
+  const ctx = canvas.getContext('2d');
+  let particlesArray = [];
+  
+  // Keep track of mouse movement to calculate inertia velocity vectors
+  let lastMouseX = null;
+  let lastMouseY = null;
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  class TrailParticle {
+    constructor(x, y, movementX, movementY) {
+      this.x = x;
+      this.y = y;
+      this.initialSize = Math.random() * 4 + 3; // Slightly bigger dots for a chunkier, premium glow look
+      this.size = this.initialSize;
+      
+      // Inject directional momentum based on how fast the mouse moved
+      this.speedX = movementX * 0.15 + (Math.random() * 0.4 - 0.2);
+      this.speedY = movementY * 0.15 + (Math.random() * 0.4 - 0.2);
+      
+      this.alpha = 1;
+      this.decay = 0.012; // Lower decay rate = significantly longer trail lines
+    }
+    update() {
+      // Apply slight drift physics
+      this.x += this.speedX;
+      this.y += this.speedY;
+      
+      // Gradually decelerate dust particles over time
+      this.speedX *= 0.96;
+      this.speedY *= 0.96;
+      
+      this.alpha -= this.decay;
+      
+      // Kinetic Shrinking: shrink the dot relative to its fading alpha transparency level
+      this.size = this.initialSize * this.alpha;
+    }
+    draw() {
+      if (this.alpha <= 0) return;
+      ctx.save();
+      ctx.globalAlpha = this.alpha;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = '#F47521';
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = '#F47521';
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  window.addEventListener('mousemove', (e) => {
+    // Calculate raw mouse vectors on movement frames
+    const currentX = e.clientX;
+    const currentY = e.clientY;
+    
+    let deltaX = 0;
+    let deltaY = 0;
+
+    if (lastMouseX !== null && lastMouseY !== null) {
+      deltaX = currentX - lastMouseX;
+      deltaY = currentY - lastMouseY;
+    }
+
+    lastMouseX = currentX;
+    lastMouseY = currentY;
+
+    // Spawn physics-enabled trail nodes
+    particlesArray.push(new TrailParticle(currentX, currentY, deltaX, deltaY));
+    particlesArray.push(new TrailParticle(currentX, currentY, deltaX, deltaY));
+  });
+
+  function handleParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < particlesArray.length; i++) {
+      particlesArray[i].update();
+      particlesArray[i].draw();
+      
+      if (particlesArray[i].alpha <= 0) {
+        particlesArray.splice(i, 1);
+        i--;
+      }
+    }
+    requestAnimationFrame(handleParticles);
+  }
+  handleParticles();
+})();
+
 window.onload = () => {
   setTimeout(() => document.getElementById('full-code')?.focus(), 300);
 };
 
-function getCode(){
-  // Grab whatever text is inside the single box, make it uppercase, and remove extra spaces
+function getCode() {
   return document.getElementById('full-code').value.trim().toUpperCase();
 }
 
 // ----------------------------------------------------
-// FIREBASE INTEGRATION LOGIC
+// FIREBASE CONFIG & REDEMPTION LOGIC
 // ----------------------------------------------------
 const firebaseConfig = {
   apiKey: "AIzaSyB-e5_KWzSnmE_QEUmW5kB25hMciktv_EU",
@@ -204,13 +313,13 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-function tryRedeem(){
+function tryRedeem() {
   const code = getCode();
   
-  document.getElementById('res-success').style.display='none';
-  document.getElementById('res-error').style.display='none';
+  document.getElementById('res-success').style.display = 'none';
+  document.getElementById('res-error').style.display = 'none';
 
-  if(code.length === 0) {
+  if (code.length === 0) {
     pulse(document.getElementById('full-code'));
     return;
   }
@@ -221,7 +330,6 @@ function tryRedeem(){
   btn.style.opacity = "0.7";
   btn.style.pointerEvents = "none";
 
-  // Check Firestore Database using exactly what was typed into the box
   db.collection("vault").doc(code).get().then((doc) => {
     btn.innerHTML = originalText;
     btn.style.opacity = "1";
@@ -233,7 +341,7 @@ function tryRedeem(){
       document.getElementById('out-pass').textContent = data.password;
 
       document.getElementById('res-success').style.display = 'block';
-      burst(false); // Triggers the particle burst
+      burst(false);
       showToast('🎉 Credentials unlocked!');
     } else {
       const e = document.getElementById('res-error');
@@ -250,47 +358,46 @@ function tryRedeem(){
   });
 }
 
-// Visual Helpers
-function rebounce(el){
-  el.style.animation='none';
+function rebounce(el) {
+  el.style.animation = 'none';
   void el.offsetWidth;
-  el.style.animation='shake .4s ease';
+  el.style.animation = 'shake .4s ease';
 }
 
-function copyField(id){
-  navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>showToast('📋 Copied!'));
+function copyField(id) {
+  navigator.clipboard.writeText(document.getElementById(id).textContent).then(() => showToast('📋 Copied!'));
 }
 
-function copyBoth(){
-  const e=document.getElementById('out-email').textContent;
-  const p=document.getElementById('out-pass').textContent;
-  navigator.clipboard.writeText(`Email: ${e}\nPassword: ${p}`).then(()=>showToast('📋 Both copied!'));
+function copyBoth() {
+  const e = document.getElementById('out-email').textContent;
+  const p = document.getElementById('out-pass').textContent;
+  navigator.clipboard.writeText(`Email: ${e}\nPassword: ${p}`).then(() => showToast('📋 Both copied!'));
 }
 
-function pulse(el){
-  if(!el)return;
-  el.style.borderColor='var(--danger)';
-  el.style.boxShadow='0 0 0 3px rgba(248,113,113,.2)';
-  setTimeout(()=>{el.style.borderColor='';el.style.boxShadow=''},900);
+function pulse(el) {
+  if (!el) return;
+  el.style.borderColor = 'var(--danger)';
+  el.style.boxShadow = '0 0 0 3px rgba(248,113,113,.2)';
+  setTimeout(() => { el.style.borderColor = ''; el.style.boxShadow = '' }, 900);
 }
 
-function showToast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
   t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2300);
+  setTimeout(() => t.classList.remove('show'), 2300);
 }
 
-function burst(isPerm){
-  const w=document.getElementById('particles');
-  const cols=isPerm
-    ?['#a78bfa','#c4b5fd','#7c3aed','#fff','#ddd6fe']
-    :['#F47521','#ff8c3a','#ffd700','#fff','#4ade80'];
-  for(let i=0;i<32;i++){
-    const p=document.createElement('div');p.className='particle';
-    const a=Math.random()*360,d=90+Math.random()*160;
-    p.style.cssText=`left:50%;top:55%;background:${cols[Math.floor(Math.random()*cols.length)]};--tx:${Math.cos(a*Math.PI/180)*d}px;--ty:${Math.sin(a*Math.PI/180)*d-60}px;width:${4+Math.random()*6}px;height:${4+Math.random()*6}px;animation-duration:${.6+Math.random()*.8}s;animation-delay:${Math.random()*.15}s`;
-    w.appendChild(p);setTimeout(()=>p.remove(),1600);
+function burst(isPerm) {
+  const w = document.getElementById('particles');
+  const cols = isPerm
+    ? ['#a78bfa', '#c4b5fd', '#7c3aed', '#fff', '#ddd6fe']
+    : ['#F47521', '#ff8c3a', '#ffd700', '#fff', '#4ade80'];
+  for (let i = 0; i < 32; i++) {
+    const p = document.createElement('div'); p.className = 'particle';
+    const a = Math.random() * 360, d = 90 + Math.random() * 160;
+    p.style.cssText = `left:50%;top:55%;background:${cols[Math.floor(Math.random() * cols.length)]};--tx:${Math.cos(a * Math.PI / 180) * d}px;--ty:${Math.sin(a * Math.PI / 180) * d - 60}px;width:${4 + Math.random() * 6}px;height:${4 + Math.random() * 6}px;animation-duration:${.6 + Math.random() * .8}s;animation-delay:${Math.random() * .15}s`;
+    w.appendChild(p); setTimeout(() => p.remove(), 1600);
   }
 }
 </script>
