@@ -1,285 +1,298 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Johnny's Crunchyroll Account</title>
-  <style>
-    /* Premium Animated Background Layer */
-    body {
-      background-color: #141519;
-      color: #ffffff;
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      overflow: hidden;
-      position: relative;
-    }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Johnny's Crunchyroll Account</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cr:#F47521;--cr2:#ff8c3a;
+  --dark:#111;--card:#1e1e1e;--card2:#282828;
+  --border:rgba(255,255,255,0.08);
+  --text:#fff;--muted:rgba(255,255,255,0.45);
+  --success:#4ade80;--danger:#f87171;--warn:#fbbf24;--perm:#a78bfa;
+  --font:'Nunito',sans-serif;
+}
+html,body{min-height:100vh;background:var(--dark);color:var(--text);font-family:var(--font);overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;background:repeating-linear-gradient(-55deg,transparent,transparent 60px,rgba(244,117,33,.035) 60px,rgba(244,117,33,.035) 61px);animation:bgMove 18s linear infinite}
+@keyframes bgMove{0%{background-position:0 0}100%{background-position:61px 61px}}
+body::after{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 80% 55% at 50% 0%,rgba(244,117,33,.13) 0%,transparent 70%)}
+.lines{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.line{position:absolute;height:1px;background:linear-gradient(90deg,transparent,rgba(244,117,33,.13),transparent);animation:lineMove linear infinite}
+@keyframes lineMove{0%{transform:translateX(-100%);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateX(200vw);opacity:0}}
+.particles{position:fixed;inset:0;pointer-events:none;z-index:200;overflow:hidden}
+.particle{position:absolute;border-radius:50%;background:var(--cr);animation:pFly linear forwards;opacity:0}
+@keyframes pFly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0)}}
 
-    /* Subtle glowing cosmic background pulse */
-    body::before {
-      content: '';
-      position: absolute;
-      width: 150%;
-      height: 150%;
-      background: radial-gradient(circle, rgba(244, 117, 33, 0.08) 0%, transparent 60%);
-      animation: superPulse 8s ease-in-out infinite;
-      z-index: 1;
-    }
+header{position:relative;z-index:10;padding:1rem 1.5rem;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);background:rgba(17,17,17,.85);backdrop-filter:blur(12px)}
+.hlogo{display:flex;align-items:center;gap:10px;animation:fadeD .5s ease both}
+@keyframes fadeD{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.hicon{width:36px;height:36px;background:var(--cr);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 18px rgba(244,117,33,.45);animation:glow 2.5s ease-in-out infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 18px rgba(244,117,33,.4)}50%{box-shadow:0 0 34px rgba(244,117,33,.7)}}
+.hname{font-size:1.2rem;font-weight:900;letter-spacing:-.02em;background:linear-gradient(90deg,#fff 60%,var(--cr));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hbadge{margin-left:auto;font-size:.65rem;font-weight:800;background:var(--cr);color:#fff;padding:2px 8px;border-radius:50px;letter-spacing:.06em;text-transform:uppercase;animation:fadeD .5s .1s ease both}
 
-    /* Ultra-Smooth Card Reveal Animation */
-    .card {
-      background-color: #23252b;
-      padding: 40px;
-      border-radius: 16px;
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 30px rgba(244, 117, 33, 0.05);
-      border-top: 6px solid #f47521;
-      position: relative;
-      z-index: 2;
-      opacity: 1; /* Keep base visibility explicitly at 1 */
-      transform: translateY(0);
-      animation: cardEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
+main{position:relative;z-index:5;min-height:calc(100vh - 65px);display:flex;align-items:center;justify-content:center;padding:2rem 1rem}
+.panel{width:100%;max-width:500px;animation:panelIn .6s cubic-bezier(.16,1,.3,1) both}
+@keyframes panelIn{from{opacity:0;transform:translateY(28px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 
-    h2 {
-      color: #f47521;
-      margin-bottom: 10px;
-      font-size: 28px;
-      letter-spacing: 0.5px;
-      animation: textGlow 3s ease-in-out infinite alternate;
-    }
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1rem}
+.clabel{font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--cr);margin-bottom:.9rem}
 
-    p.subtitle {
-      color: #a0a5b5;
-      font-size: 14px;
-      margin-bottom: 30px;
-    }
+/* Single Input Field Styling */
+input[type="text"]{
+  width:100%;
+  background:var(--card2);
+  border:2px solid var(--border);
+  border-radius:10px;
+  padding:14px 16px;
+  color:var(--text);
+  font-family:var(--font);
+  font-size:1.1rem;
+  font-weight:700;
+  letter-spacing: 1px;
+  text-align: center;
+  outline:none;
+  transition:border-color .2s,box-shadow .2s;
+  margin-bottom: 1.2rem;
+}
+input[type="text"]:focus{border-color:var(--cr);box-shadow:0 0 0 3px rgba(244,117,33,.15)}
+input[type="text"]::placeholder{color:var(--muted);font-weight:600; letter-spacing: 0px;}
 
-    /* Input Field with Hover and Glow transitions */
-    input[type="text"] {
-      width: 88%;
-      padding: 15px;
-      background-color: #141519;
-      border: 2px solid #3a3f4b;
-      color: white;
-      border-radius: 8px;
-      font-size: 16px;
-      margin-bottom: 20px;
-      text-align: center;
-      letter-spacing: 1px;
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    }
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 18px;border-radius:10px;font-family:var(--font);font-size:.9rem;font-weight:800;cursor:pointer;border:none;transition:transform .15s,filter .2s,box-shadow .2s, opacity .2s;letter-spacing:.01em;white-space:nowrap}
+.btn:active{transform:scale(.96)}
+.btn-cr{background:var(--cr);color:#fff;box-shadow:0 4px 16px rgba(244,117,33,.35)}
+.btn-cr:hover{filter:brightness(1.1);box-shadow:0 6px 24px rgba(244,117,33,.5)}
+.btn-outline{background:transparent;color:var(--muted);border:1.5px solid var(--border)}
+.btn-outline:hover{border-color:rgba(255,255,255,.2);color:var(--text)}
+.btn-full{width:100%;padding:13px;font-size:.95rem;border-radius:12px;}
+.btn-sm{padding:6px 14px;font-size:.78rem;border-radius:8px}
 
-    input[type="text"]:focus {
-      border-color: #f47521;
-      box-shadow: 0 0 15px rgba(244, 117, 33, 0.3);
-      transform: scale(1.02);
-      outline: none;
-    }
+/* REDEEM */
+#redeem-panel{display:block}
+.r-logo{text-align:center;margin-bottom:1.5rem;animation:logoBig .7s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes logoBig{from{transform:scale(.3) rotate(-15deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+.r-icon{width:76px;height:76px;background:var(--cr);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:38px;margin:0 auto .9rem;box-shadow:0 0 50px rgba(244,117,33,.5);animation:glow 2s ease-in-out infinite}
+.r-title{font-size:1.75rem;font-weight:900;letter-spacing:-.03em;animation:fadeU .5s .1s ease both}
+.r-title span{color:var(--cr)}
+@keyframes fadeU{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.r-sub{font-size:.85rem;color:var(--muted);font-weight:600;margin-top:.3rem;margin-bottom:1.75rem;animation:fadeU .5s .2s ease both}
 
-    /* Fluid Kinetic Button */
-    button {
-      background-color: #f47521;
-      color: black;
-      border: none;
-      padding: 15px;
-      font-size: 16px;
-      font-weight: bold;
-      border-radius: 8px;
-      cursor: pointer;
-      width: 96%;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 4px 15px rgba(244, 117, 33, 0.2);
-    }
+.res-success{display:none;margin-top:1.2rem;animation:popIn .6s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes popIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+.res-success .check{font-size:2.5rem;text-align:center}
+.res-success h3{font-size:1.05rem;font-weight:900;color:var(--success);text-align:center;margin:.4rem 0 .2rem}
+.res-success h3.perm-h{color:var(--perm)}
+.res-success p{font-size:.82rem;color:var(--muted);font-weight:600;text-align:center;margin-bottom:.75rem}
+.cred-box{background:rgba(74,222,128,.07);border:1.5px solid rgba(74,222,128,.25);border-radius:14px;padding:1.25rem}
+.cred-box.perm-cred{background:rgba(167,139,250,.07);border-color:rgba(167,139,250,.3)}
+.cred-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.cred-row:last-of-type{margin-bottom:0}
+.cred-label{font-size:.68rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(74,222,128,.65)}
+.cred-box.perm-cred .cred-label{color:rgba(167,139,250,.7)}
+.cred-val{font-size:.95rem;font-weight:800;color:var(--success);font-family:monospace;word-break:break-all}
+.cred-box.perm-cred .cred-val{color:var(--perm)}
+.res-error{display:none;margin-top:1rem;border-radius:12px;padding:.9rem 1.1rem;text-align:center;animation:shake .4s ease;background:rgba(248,113,113,.08);border:1.5px solid rgba(248,113,113,.25)}
+.res-error p{font-size:.88rem;color:var(--danger);font-weight:700}
 
-    button:hover {
-      background-color: #ff8533;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(244, 117, 33, 0.4);
-    }
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
 
-    button:active {
-      transform: translateY(1px);
-    }
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(60px);background:#fff;color:#111;padding:10px 22px;border-radius:50px;font-size:.83rem;font-weight:800;pointer-events:none;transition:transform .35s cubic-bezier(.16,1,.3,1),opacity .35s;opacity:0;z-index:999;box-shadow:0 4px 24px rgba(0,0,0,.35)}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+</style>
 
-    /* Circular Loading Spinner */
-    .spinner-container {
-      display: none;
-      justify-content: center;
-      margin-top: 20px;
-    }
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-    .spinner {
-      width: 42px;
-      height: 42px;
-      border: 4px solid #3a3f4b;
-      border-top: 4px solid #f47521;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    /* Dramatic Slide-Down & Pop Reveal Box */
-    .secret-box {
-      display: none;
-      background-color: #141519;
-      border: 2px dashed #f47521;
-      padding: 22px;
-      margin-top: 25px;
-      border-radius: 10px;
-      text-align: left;
-      opacity: 0;
-      transform: scale(0.9) translateY(-10px);
-      transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    .secret-box.show {
-      display: block;
-      opacity: 1;
-      transform: scale(1) translateY(0);
-    }
-
-    .credential-row {
-      margin: 12px 0;
-      font-size: 15px;
-      opacity: 0;
-      transform: translateX(-10px);
-    }
-
-    .secret-box.show .credential-row {
-      animation: revealText 0.4s ease forwards;
-    }
-    .secret-box.show .credential-row:nth-child(2) { animation-delay: 0.15s; }
-    .secret-box.show .credential-row:nth-child(3) { animation-delay: 0.3s; }
-
-    /* Keyframe Animations */
-    @keyframes cardEntrance {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes superPulse {
-      0%, 100% { transform: scale(1); opacity: 0.8; }
-      50% { transform: scale(1.1); opacity: 1; }
-    }
-
-    @keyframes textGlow {
-      from { text-shadow: 0 0 5px rgba(244, 117, 33, 0.2); }
-      to { text-shadow: 0 0 15px rgba(244, 117, 33, 0.6); }
-    }
-
-    @keyframes spin {
-      100% { transform: rotate(360deg); }
-    }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-10px); }
-      40%, 80% { transform: translateX(10px); }
-    }
-
-    @keyframes revealText {
-      to { opacity: 1; transform: translateX(0); }
-    }
-
-    .shake-animation {
-      animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
-    }
-
-    .error {
-      display: none;
-      color: #ff4444;
-      margin-top: 15px;
-      font-size: 14px;
-      font-weight: bold;
-    }
-  </style>
-
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
-<div class="card" id="mainCard">
-  <h2>Johnny's crunchyroll account</h2>
-  <p class="subtitle">Enter your invite code to unlock premium streaming access.</p>
-  
-  <input type="text" id="inviteCode" placeholder="ENTER ACCESS CODE">
-  <button id="unlockBtn" onclick="processUnlock()">Unlock Login</button>
+<div class="lines" id="lines"></div>
+<div class="particles" id="particles"></div>
 
-  <div class="spinner-container" id="loadingSpinner"><div class="spinner"></div></div>
-  <p id="errorMsg" class="error">❌ Invalid Passcode - Try Again</p>
+<header>
+  <div class="hlogo">
+    <div class="hicon">🍥</div>
+    <span class="hname">Johnny's Portal</span>
+  </div>
+  <span class="hbadge">Premium Share</span>
+</header>
 
-  <div id="credentials" class="secret-box">
-    <p style="color: #f47521; margin-top: 0; font-weight: bold; font-size: 16px;" class="credential-row">🎉 ACCESS GRANTED</p>
-    <div class="credential-row">
-      <strong>Email:</strong> <span id="displayEmail" style="color: #a0a5b5; margin-left: 5px;"></span>
+<main>
+<div class="panel" id="redeem-panel">
+  <div class="r-logo">
+    <div class="r-icon">🍥</div>
+  </div>
+  <div style="text-align:center">
+    <h2 class="r-title">Unlock <span>Crunchyroll</span></h2>
+    <p class="r-sub">Enter your code to reveal the login credentials</p>
+  </div>
+
+  <div class="card" id="mainCard">
+    <div class="clabel" style="text-align:left">🎟️ Enter your code</div>
+    
+    <input type="text" id="full-code" placeholder="ENTER PASSCODE" onkeydown="if(event.key==='Enter') tryRedeem()" autocomplete="off" />
+    
+    <button class="btn btn-cr btn-full" id="unlockBtn" onclick="tryRedeem()">🔓 Unlock Credentials</button>
+
+    <div class="res-success" id="res-success">
+      <div class="check" id="res-check">✅</div>
+      <h3 id="res-title">Credentials Unlocked!</h3>
+      <div class="cred-box" id="cred-box">
+        <div class="cred-row">
+          <span class="cred-label">Email / Username</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="cred-val" id="out-email"></span>
+            <button class="btn btn-outline btn-sm" onclick="copyField('out-email')">Copy</button>
+          </div>
+        </div>
+        <hr style="border:none;border-top:1px solid rgba(74,222,128,.15);margin:.75rem 0" id="cred-hr"/>
+        <div class="cred-row">
+          <span class="cred-label">Password</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="cred-val" id="out-pass"></span>
+            <button class="btn btn-outline btn-sm" onclick="copyField('out-pass')">Copy</button>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-cr btn-full" onclick="copyBoth()" style="margin-top:.75rem">📋 Copy Both</button>
     </div>
-    <div class="credential-row">
-      <strong>Password:</strong> <span id="displayPassword" style="color: #a0a5b5; margin-left: 5px;"></span>
-    </div>
+
+    <div class="res-error" id="res-error"><p>❌ Invalid code. Double-check and try again.</p></div>
   </div>
 </div>
+</main>
+
+<div class="toast" id="toast"></div>
 
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyB-e5_KWzSnmE_QEUmW5kB25hMciktv_EU",
-    authDomain: "crunchypass-5a337.firebaseapp.com",
-    projectId: "crunchypass-5a337",
-    storageBucket: "crunchypass-5a337.firebasestorage.app",
-    messagingSenderId: "387887634118",
-    appId: "1:387887634118:web:5cfbcf10769cea031369c7",
-    measurementId: "G-H9L83GJ74L"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-
-  function processUnlock() {
-    const userEntered = document.getElementById("inviteCode").value.trim().toUpperCase();
-    const card = document.getElementById("mainCard");
-    const credsBox = document.getElementById("credentials");
-    const errorBox = document.getElementById("errorMsg");
-    const spinner = document.getElementById("loadingSpinner");
-    const button = document.getElementById("unlockBtn");
-
-    errorBox.style.display = "none";
-    credsBox.classList.remove("show");
-    card.classList.remove("shake-animation");
-    button.style.display = "none";
-    spinner.style.display = "flex";
-
-    db.collection("vault").doc(userEntered).get().then((doc) => {
-      setTimeout(() => {
-        spinner.style.display = "none";
-        button.style.display = "block";
-
-        if (doc.exists) {
-          const data = doc.data();
-          document.getElementById("displayEmail").innerText = data.email;
-          document.getElementById("displayPassword").innerText = data.password;
-          credsBox.classList.add("show");
-        } else {
-          errorBox.style.display = "block";
-          void card.offsetWidth; // Force CSS layout reflow to trigger restart
-          card.classList.add("shake-animation");
-        }
-      }, 800);
-    }).catch((error) => {
-      console.error("Database connection error: ", error);
-      spinner.style.display = "none";
-      button.style.display = "block";
-      errorBox.style.display = "block";
-      void card.offsetWidth;
-      card.classList.add("shake-animation");
-    });
+// Speed lines animation
+(()=>{
+  const w=document.getElementById('lines');
+  for(let i=0;i<10;i++){
+    const l=document.createElement('div');l.className='line';
+    l.style.cssText=`top:${Math.random()*100}%;width:${80+Math.random()*180}px;animation-duration:${3+Math.random()*6}s;animation-delay:${-Math.random()*8}s`;
+    w.appendChild(l);
   }
-</script>
+})();
 
+// Auto-focus the input box when the page loads
+window.onload = () => {
+  setTimeout(() => document.getElementById('full-code')?.focus(), 300);
+};
+
+function getCode(){
+  // Grab whatever text is inside the single box, make it uppercase, and remove extra spaces
+  return document.getElementById('full-code').value.trim().toUpperCase();
+}
+
+// ----------------------------------------------------
+// FIREBASE INTEGRATION LOGIC
+// ----------------------------------------------------
+const firebaseConfig = {
+  apiKey: "AIzaSyB-e5_KWzSnmE_QEUmW5kB25hMciktv_EU",
+  authDomain: "crunchypass-5a337.firebaseapp.com",
+  projectId: "crunchypass-5a337",
+  storageBucket: "crunchypass-5a337.firebasestorage.app",
+  messagingSenderId: "387887634118",
+  appId: "1:387887634118:web:5cfbcf10769cea031369c7",
+  measurementId: "G-H9L83GJ74L"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+function tryRedeem(){
+  const code = getCode();
+  
+  document.getElementById('res-success').style.display='none';
+  document.getElementById('res-error').style.display='none';
+
+  if(code.length === 0) {
+    pulse(document.getElementById('full-code'));
+    return;
+  }
+  
+  const btn = document.getElementById('unlockBtn');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = "⏳ Authenticating...";
+  btn.style.opacity = "0.7";
+  btn.style.pointerEvents = "none";
+
+  // Check Firestore Database using exactly what was typed into the box
+  db.collection("vault").doc(code).get().then((doc) => {
+    btn.innerHTML = originalText;
+    btn.style.opacity = "1";
+    btn.style.pointerEvents = "auto";
+
+    if (doc.exists) {
+      const data = doc.data();
+      document.getElementById('out-email').textContent = data.email;
+      document.getElementById('out-pass').textContent = data.password;
+
+      document.getElementById('res-success').style.display = 'block';
+      burst(false); // Triggers the particle burst
+      showToast('🎉 Credentials unlocked!');
+    } else {
+      const e = document.getElementById('res-error');
+      e.style.display = 'block';
+      rebounce(e);
+    }
+  }).catch((error) => {
+    btn.innerHTML = originalText;
+    btn.style.opacity = "1";
+    btn.style.pointerEvents = "auto";
+    const e = document.getElementById('res-error');
+    e.style.display = 'block';
+    rebounce(e);
+  });
+}
+
+// Visual Helpers
+function rebounce(el){
+  el.style.animation='none';
+  void el.offsetWidth;
+  el.style.animation='shake .4s ease';
+}
+
+function copyField(id){
+  navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>showToast('📋 Copied!'));
+}
+
+function copyBoth(){
+  const e=document.getElementById('out-email').textContent;
+  const p=document.getElementById('out-pass').textContent;
+  navigator.clipboard.writeText(`Email: ${e}\nPassword: ${p}`).then(()=>showToast('📋 Both copied!'));
+}
+
+function pulse(el){
+  if(!el)return;
+  el.style.borderColor='var(--danger)';
+  el.style.boxShadow='0 0 0 3px rgba(248,113,113,.2)';
+  setTimeout(()=>{el.style.borderColor='';el.style.boxShadow=''},900);
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2300);
+}
+
+function burst(isPerm){
+  const w=document.getElementById('particles');
+  const cols=isPerm
+    ?['#a78bfa','#c4b5fd','#7c3aed','#fff','#ddd6fe']
+    :['#F47521','#ff8c3a','#ffd700','#fff','#4ade80'];
+  for(let i=0;i<32;i++){
+    const p=document.createElement('div');p.className='particle';
+    const a=Math.random()*360,d=90+Math.random()*160;
+    p.style.cssText=`left:50%;top:55%;background:${cols[Math.floor(Math.random()*cols.length)]};--tx:${Math.cos(a*Math.PI/180)*d}px;--ty:${Math.sin(a*Math.PI/180)*d-60}px;width:${4+Math.random()*6}px;height:${4+Math.random()*6}px;animation-duration:${.6+Math.random()*.8}s;animation-delay:${Math.random()*.15}s`;
+    w.appendChild(p);setTimeout(()=>p.remove(),1600);
+  }
+}
+</script>
 </body>
 </html>
