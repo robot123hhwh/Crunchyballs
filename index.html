@@ -42,8 +42,8 @@
       border-top: 6px solid #f47521;
       position: relative;
       z-index: 2;
-      transform: translateY(30px);
-      opacity: 0;
+      opacity: 1; /* Keep base visibility explicitly at 1 */
+      transform: translateY(0);
       animation: cardEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
@@ -151,15 +151,15 @@
       transform: translateX(-10px);
     }
 
-    /* Staggered text presentation once unlocked */
     .secret-box.show .credential-row {
       animation: revealText 0.4s ease forwards;
     }
     .secret-box.show .credential-row:nth-child(2) { animation-delay: 0.15s; }
     .secret-box.show .credential-row:nth-child(3) { animation-delay: 0.3s; }
 
-    /* Pure CSS Keyframe System */
+    /* Keyframe Animations */
     @keyframes cardEntrance {
+      from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
@@ -227,7 +227,6 @@
 </div>
 
 <script>
-  // Active web Firebase configurations
   const firebaseConfig = {
     apiKey: "AIzaSyB-e5_KWzSnmE_QEUmW5kB25hMciktv_EU",
     authDomain: "crunchypass-5a337.firebaseapp.com",
@@ -249,12 +248,9 @@
     const spinner = document.getElementById("loadingSpinner");
     const button = document.getElementById("unlockBtn");
 
-    // Reset layouts dynamically
     errorBox.style.display = "none";
     credsBox.classList.remove("show");
     card.classList.remove("shake-animation");
-    
-    // Hide action triggers and spin up the loader
     button.style.display = "none";
     spinner.style.display = "flex";
 
@@ -270,8 +266,7 @@
           credsBox.classList.add("show");
         } else {
           errorBox.style.display = "block";
-          // Trigger a clean restart on the CSS shake keyframes
-          void card.offsetWidth; 
+          void card.offsetWidth; // Force CSS layout reflow to trigger restart
           card.classList.add("shake-animation");
         }
       }, 800);
